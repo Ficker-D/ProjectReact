@@ -1,0 +1,30 @@
+@import './assets/styles/base.scss';
+
+#root {
+  display: flex;
+  height: 100%;
+}
+
+#root > div:first-child {
+  flex: 1;
+}
+
+.el-table__header{
+  width: 100% !important
+}
+
+.el-table__body{
+  width: 100% !important
+}
+.el-button{
+  padding: 8px 10px
+}
+.el-dialog--small{
+  width: 500px
+}
+.el-input{
+  width: 300px
+}
+.el-dialog__body{
+  padding: 30px 20px 0;
+}

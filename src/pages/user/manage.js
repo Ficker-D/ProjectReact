@@ -63,7 +63,7 @@ class UserManage extends Component {
         {label: "操作",width:'100%',render: (row, column, index)=>{
           return (
             <span>
-             <Button plain={true} type="info" size="small">编辑</Button>
+             <Button plain={true} type="info" size="small" >编辑</Button>
              <Button type="danger" size="small" onClick={ this.deleteUser.bind(this,row)}>删除
              </Button>
             </span>
@@ -123,6 +123,7 @@ class UserManage extends Component {
     .catch(error => {
       alert('添加失败!');
       console.log(error);
+      //数据请求错误时刷新页面
       window.location.reload();
     });
   }

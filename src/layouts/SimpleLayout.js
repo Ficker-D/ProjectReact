@@ -11,7 +11,10 @@ class SimpleLayout extends React.Component {
   state = {
     collapsed: false,
   };
-
+  cancellation=()=>{
+    window.sessionStorage.removeItem('user')
+    window.sessionStorage.removeItem('jwt')
+  }
   toggle = () => {
     this.setState({
       collapsed: !this.state.collapsed,
@@ -32,6 +35,7 @@ class SimpleLayout extends React.Component {
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
             />
+            <a href="" onClick={this.cancellation} style={{margin:"0 0 0 85%"}}>注销</a>
           </Header>
           <Content
             style={{

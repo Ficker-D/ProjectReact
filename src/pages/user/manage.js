@@ -17,14 +17,33 @@ class UserManage extends Component {
     super(props);
   
     this.state = {
+      dialogVisible2: false,
       dialogVisible3: false,
+      // 添加新用户的表单
       form: {
         name: '',
         email: '',
         password:''
       },
+      // 编辑用户的表单
+      form2: {
+        id2:'',
+        name2: '',
+        email2: '',
+        password2:''
+      },
       rules: {
         name: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { validator: (rule, value, callback) => {
+            if (value === '') {
+              callback(new Error('请输入用户名'));
+            } else {
+              callback();
+            }
+          } }
+        ],
+        name2: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { validator: (rule, value, callback) => {
             if (value === '') {
@@ -63,9 +82,8 @@ class UserManage extends Component {
         {label: "操作",width:'100%',render: (row, column, index)=>{
           return (
             <span>
-             <Button plain={true} type="info" size="small" >编辑</Button>
-             <Button type="danger" size="small" onClick={ this.deleteUser.bind(this,row)}>删除
-             </Button>
+             <Button plain={true} type="info" size="small" onClick={ this.editUser.bind(this,row)} >编辑</Button>
+             <Button type="danger" size="small" onClick={ this.deleteUser.bind(this,row)}>删除</Button>
             </span>
           )
         }}
@@ -76,7 +94,6 @@ class UserManage extends Component {
           type: 'success'
         });
       }
-      // onClick={this.deleteRow.bind(this, index)}
     }
   }
   //删除用户
@@ -92,6 +109,26 @@ class UserManage extends Component {
   onChange(key, value) {
     this.setState({
       form: Object.assign({}, this.state.form, { [key]: value })
+    });
+  }
+  onChange2(key, value) {
+    this.setState({
+      form2: Object.assign({}, this.state.form2, { [key]: value })
+    });
+  }
+  //编辑用户
+  editUser(row){
+    console.log(row)
+    let id=row.id;
+    this.setState({
+      // form: Object.assign({}, this.state.form, { name: row.username,email:row.email })
+      form2: {
+        id2:row.id,
+        name2:row.username,
+        email2:row.email,
+        password2:'',
+      },
+      dialogVisible2: true,
     });
 
   }
@@ -118,6 +155,7 @@ class UserManage extends Component {
     })
     .then(response => {
       alert('添加成功!');
+      this.props.getUserList();
       console.log(response);
     })
     .catch(error => {
@@ -126,8 +164,31 @@ class UserManage extends Component {
       //数据请求错误时刷新页面
       window.location.reload();
     });
-  }
 
+  }
+  //表单提交时修改用户
+  handleSubmit2(e) {
+    e.preventDefault();
+
+    this.setState({ dialogVisible2: false });
+
+    request.patch(`/api/v1/users/${this.state.form2.id2}`,{
+      username:this.state.form2.name2,
+
+    })
+    .then(response => {
+      alert('修改成功!');
+      console.log(response);
+      this.props.getUserList();
+    })
+    .catch(error => {
+      alert('修改失败!');
+      console.log(error);
+      //数据请求错误时刷新页面
+      window.location.reload();
+    });
+  }
+  
   render() {
     return (
       <div>
@@ -170,6 +231,31 @@ class UserManage extends Component {
           data={this.props.userList}
           highlightCurrentRow={true}
         />
+
+        <Dialog
+          title="编辑用户"
+          visible={ this.state.dialogVisible2 }
+          onCancel={ () => this.setState({ dialogVisible2: false }) }
+        >
+          <Dialog.Body>
+            <Form ref="form2" model={this.state.form2} rules={this.state.rules} className="demo-ruleForm">
+              <Form.Item label="用户名" prop="name2" labelWidth="100">
+                <Input value={this.state.form2.name2} onChange={this.onChange2.bind(this, 'name2')}></Input>
+              </Form.Item>
+              <Form.Item label="邮  箱" prop="email2" labelWidth="100">
+                <Input value={this.state.form2.email2} disabled onChange={this.onChange2.bind(this, 'email2')}></Input>
+              </Form.Item>
+              <Form.Item label="密  码" prop="password2" labelWidth="100">
+                <Input value={this.state.form2.password2} disabled onChange={this.onChange2.bind(this, 'password2')}></Input>
+              </Form.Item>
+            </Form>
+          </Dialog.Body>
+
+          <Dialog.Footer className="dialog-footer">
+            <Button onClick={ () => this.setState({ dialogVisible2: false }) }>取 消</Button>
+            <Button type="primary" onClick={this.handleSubmit2.bind(this)}>确 定</Button>
+          </Dialog.Footer>
+        </Dialog>
       </div>
     );
   }
